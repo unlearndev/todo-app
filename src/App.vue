@@ -14,16 +14,25 @@ const filteredTodos = computed(() => {
   return todos.value
 })
 
+const sortedTodos = computed(() =>
+  [...filteredTodos.value].sort((a, b) => b.priority - a.priority),
+)
+
 const remaining = computed(() => todos.value.filter((todo) => !todo.done).length)
 const completed = computed(() => todos.value.length - remaining.value)
 
-function addTodo(title) {
-  todos.value.push({ id: nextId++, title, done: false })
+function addTodo(title, priority = false) {
+  todos.value.push({ id: nextId++, title, done: false, priority })
 }
 
 function toggleTodo(id) {
   const todo = todos.value.find((todo) => todo.id === id)
   if (todo) todo.done = !todo.done
+}
+
+function togglePriority(id) {
+  const todo = todos.value.find((todo) => todo.id === id)
+  if (todo) todo.priority = !todo.priority
 }
 
 function deleteTodo(id) {
@@ -39,7 +48,12 @@ function clearCompleted() {
   <main class="todo-app">
     <h1>Todos</h1>
     <TodoInput @add="addTodo" />
-    <TodoList :todos="filteredTodos" @toggle="toggleTodo" @delete="deleteTodo" />
+    <TodoList
+      :todos="sortedTodos"
+      @toggle="toggleTodo"
+      @toggle-priority="togglePriority"
+      @delete="deleteTodo"
+    />
     <TodoFooter
       v-if="todos.length"
       v-model:filter="filter"
