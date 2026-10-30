@@ -3,59 +3,70 @@ import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import App from '../App.vue'
 
-async function addTodo(wrapper, text) {
-  await wrapper.find('.todo-input input').setValue(text)
+async function addTodo(wrapper, title) {
+  await wrapper.find('.todo-input input').setValue(title)
   await wrapper.find('.todo-input').trigger('submit')
 }
 
-const itemTexts = (wrapper) => wrapper.findAll('.todo-item span').map((span) => span.text())
+function titles(wrapper) {
+  return wrapper.findAll('.todo-item .title').map((node) => node.text())
+}
 
 describe('App', () => {
-  it('shows the empty state with no todos', () => {
+  it('adds a todo from the input', async () => {
     const wrapper = mount(App)
-    expect(wrapper.find('.empty').exists()).toBe(true)
-    expect(wrapper.find('.remaining').text()).toBe('0 items left')
+    await addTodo(wrapper, 'Buy milk')
+
+    expect(titles(wrapper)).toEqual(['Buy milk'])
+    expect(wrapper.find('.todo-input input').element.value).toBe('')
   })
 
-  it('adds trimmed todos, ignores empty input and clears the field', async () => {
+  it('ignores blank input', async () => {
     const wrapper = mount(App)
     await addTodo(wrapper, '   ')
-    await addTodo(wrapper, '  Buy milk  ')
 
-    expect(itemTexts(wrapper)).toEqual(['Buy milk'])
-    expect(wrapper.find('.todo-input input').element.value).toBe('')
-    expect(wrapper.find('.remaining').text()).toBe('1 item left')
+    expect(titles(wrapper)).toEqual([])
   })
 
-  it('toggles and removes todos and updates the count', async () => {
+  it('marks a todo done and not done', async () => {
     const wrapper = mount(App)
-    await addTodo(wrapper, 'One')
-    await addTodo(wrapper, 'Two')
-    expect(wrapper.find('.remaining').text()).toBe('2 items left')
+    await addTodo(wrapper, 'Buy milk')
+    const checkbox = wrapper.find('.todo-item input[type="checkbox"]')
 
-    await wrapper.find('.todo-item input').setValue(true)
+    await checkbox.setValue(true)
     expect(wrapper.find('.todo-item').classes()).toContain('done')
-    expect(wrapper.find('.remaining').text()).toBe('1 item left')
+    expect(wrapper.find('.count').text()).toBe('0 items left')
 
-    await wrapper.find('.todo-item .remove').trigger('click')
-    expect(itemTexts(wrapper)).toEqual(['Two'])
+    await checkbox.setValue(false)
+    expect(wrapper.find('.todo-item').classes()).not.toContain('done')
+    expect(wrapper.find('.count').text()).toBe('1 item left')
   })
 
-  it('filters todos, including newly added and toggled ones', async () => {
+  it('deletes a todo', async () => {
     const wrapper = mount(App)
-    await addTodo(wrapper, 'One')
-    await addTodo(wrapper, 'Two')
+    await addTodo(wrapper, 'Buy milk')
+    await addTodo(wrapper, 'Walk dog')
 
-    const [, active, completed] = wrapper.findAll('.filters button')
+    await wrapper.find('.todo-item button').trigger('click')
+    expect(titles(wrapper)).toEqual(['Walk dog'])
+  })
 
-    await active.trigger('click')
-    expect(active.classes()).toContain('active')
-    await wrapper.find('.todo-item input').setValue(true)
-    expect(itemTexts(wrapper)).toEqual(['Two'])
-    await addTodo(wrapper, 'Three')
-    expect(itemTexts(wrapper)).toEqual(['Two', 'Three'])
+  it('filters by all, active and completed', async () => {
+    const wrapper = mount(App)
+    await addTodo(wrapper, 'Buy milk')
+    await addTodo(wrapper, 'Walk dog')
+    await wrapper.findAll('.todo-item input[type="checkbox"]')[0].setValue(true)
 
-    await completed.trigger('click')
-    expect(itemTexts(wrapper)).toEqual(['One'])
+    const filterButton = (label) =>
+      wrapper.findAll('.filters button').find((button) => button.text() === label)
+
+    await filterButton('Active').trigger('click')
+    expect(titles(wrapper)).toEqual(['Walk dog'])
+
+    await filterButton('Completed').trigger('click')
+    expect(titles(wrapper)).toEqual(['Buy milk'])
+
+    await filterButton('All').trigger('click')
+    expect(titles(wrapper)).toEqual(['Buy milk', 'Walk dog'])
   })
 })

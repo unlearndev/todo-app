@@ -6,6 +6,7 @@ import TodoFooter from './components/TodoFooter.vue'
 
 const todos = ref([])
 const filter = ref('all')
+let nextId = 1
 
 const filteredTodos = computed(() => {
   if (filter.value === 'active') return todos.value.filter((todo) => !todo.done)
@@ -15,8 +16,8 @@ const filteredTodos = computed(() => {
 
 const remaining = computed(() => todos.value.filter((todo) => !todo.done).length)
 
-function addTodo(text) {
-  todos.value.push({ id: crypto.randomUUID(), text, done: false })
+function addTodo(title) {
+  todos.value.push({ id: nextId++, title, done: false })
 }
 
 function toggleTodo(id) {
@@ -24,50 +25,31 @@ function toggleTodo(id) {
   if (todo) todo.done = !todo.done
 }
 
-function removeTodo(id) {
+function deleteTodo(id) {
   todos.value = todos.value.filter((todo) => todo.id !== id)
 }
 </script>
 
 <template>
-  <main class="app">
+  <main class="todo-app">
     <h1>Todos</h1>
     <TodoInput @add="addTodo" />
-    <TodoList :todos="filteredTodos" @toggle="toggleTodo" @remove="removeTodo" />
-    <TodoFooter v-model:filter="filter" :remaining="remaining" />
+    <TodoList :todos="filteredTodos" @toggle="toggleTodo" @delete="deleteTodo" />
+    <TodoFooter v-if="todos.length" v-model:filter="filter" :remaining="remaining" />
   </main>
 </template>
 
 <style>
-:root {
-  --accent: #2f6fde;
-  --border: #e2e4e8;
-  --muted: #8a8f98;
-}
-
 body {
   margin: 0;
-  background: #f5f6f8;
-  color: #1f2328;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: system-ui, sans-serif;
+  background: #f5f5f5;
+  color: #222;
 }
-</style>
 
-<style scoped>
-.app {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+.todo-app {
   max-width: 480px;
-  margin: 3rem auto;
-  padding: 1.5rem;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
-}
-
-h1 {
-  margin: 0;
-  font-size: 1.5rem;
+  margin: 48px auto;
+  padding: 0 16px;
 }
 </style>

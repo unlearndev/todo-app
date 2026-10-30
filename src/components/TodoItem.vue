@@ -3,23 +3,16 @@ defineProps({
   todo: { type: Object, required: true },
 })
 
-const emit = defineEmits(['toggle', 'remove'])
+const emit = defineEmits(['toggle', 'delete'])
 </script>
 
 <template>
   <li class="todo-item" :class="{ done: todo.done }">
     <label>
-      <input type="checkbox" :checked="todo.done" @change="emit('toggle', todo.id)" />
-      <span>{{ todo.text }}</span>
+      <input type="checkbox" :checked="todo.done" @change="emit('toggle')" />
+      <span class="title">{{ todo.title }}</span>
     </label>
-    <button
-      type="button"
-      class="remove"
-      :aria-label="`Delete ${todo.text}`"
-      @click="emit('remove', todo.id)"
-    >
-      ×
-    </button>
+    <button type="button" aria-label="Delete" @click="emit('delete')">×</button>
   </li>
 </template>
 
@@ -28,33 +21,28 @@ const emit = defineEmits(['toggle', 'remove'])
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.6rem 0;
-  border-bottom: 1px solid var(--border);
+  padding: 8px 12px;
+  background: #fff;
+  border-bottom: 1px solid #e5e5e5;
 }
 
 label {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 8px;
   flex: 1;
-  cursor: pointer;
 }
 
-.done span {
+.done .title {
   text-decoration: line-through;
-  color: var(--muted);
+  color: #999;
 }
 
-.remove {
+button {
   border: none;
   background: none;
-  color: var(--muted);
-  font-size: 1.25rem;
-  line-height: 1;
+  font-size: 20px;
   cursor: pointer;
-}
-
-.remove:hover {
-  color: #c0392b;
+  color: #c33;
 }
 </style>

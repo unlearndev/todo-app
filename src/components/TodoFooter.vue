@@ -1,10 +1,9 @@
 <script setup>
 defineProps({
   remaining: { type: Number, required: true },
-  filter: { type: String, required: true },
 })
 
-const emit = defineEmits(['update:filter'])
+const filter = defineModel('filter', { type: String, required: true })
 
 const filters = [
   { value: 'all', label: 'All' },
@@ -15,15 +14,15 @@ const filters = [
 
 <template>
   <footer class="todo-footer">
-    <span class="remaining">{{ remaining }} {{ remaining === 1 ? 'item' : 'items' }} left</span>
+    <span class="count">{{ remaining }} {{ remaining === 1 ? 'item' : 'items' }} left</span>
     <div class="filters">
       <button
         v-for="option in filters"
         :key="option.value"
         type="button"
-        :class="{ active: filter === option.value }"
+        :class="{ selected: filter === option.value }"
         :aria-pressed="filter === option.value"
-        @click="emit('update:filter', option.value)"
+        @click="filter = option.value"
       >
         {{ option.label }}
       </button>
@@ -36,29 +35,24 @@ const filters = [
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  color: var(--muted);
+  padding: 8px 12px;
+  font-size: 14px;
 }
 
 .filters {
   display: flex;
-  gap: 0.25rem;
+  gap: 4px;
 }
 
 button {
-  padding: 0.25rem 0.6rem;
+  padding: 4px 8px;
   border: 1px solid transparent;
-  border-radius: 4px;
   background: none;
-  color: inherit;
-  font: inherit;
   cursor: pointer;
 }
 
-button.active {
-  border-color: var(--accent);
-  color: var(--accent);
+button.selected {
+  border-color: #999;
+  border-radius: 4px;
 }
 </style>

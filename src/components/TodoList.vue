@@ -5,20 +5,19 @@ defineProps({
   todos: { type: Array, required: true },
 })
 
-const emit = defineEmits(['toggle', 'remove'])
+const emit = defineEmits(['toggle', 'delete'])
 </script>
 
 <template>
-  <ul v-if="todos.length" class="todo-list">
+  <ul class="todo-list">
     <TodoItem
       v-for="todo in todos"
       :key="todo.id"
       :todo="todo"
-      @toggle="emit('toggle', $event)"
-      @remove="emit('remove', $event)"
+      @toggle="emit('toggle', todo.id)"
+      @delete="emit('delete', todo.id)"
     />
   </ul>
-  <p v-else class="empty">Nothing to show here.</p>
 </template>
 
 <style scoped>
@@ -26,12 +25,5 @@ const emit = defineEmits(['toggle', 'remove'])
   list-style: none;
   margin: 0;
   padding: 0;
-}
-
-.empty {
-  margin: 0;
-  padding: 1.5rem 0;
-  text-align: center;
-  color: var(--muted);
 }
 </style>
