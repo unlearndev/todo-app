@@ -1,7 +1,10 @@
 <script setup>
 defineProps({
   remaining: { type: Number, required: true },
+  completed: { type: Number, required: true },
 })
+
+const emit = defineEmits(['clear-completed'])
 
 const filter = defineModel('filter', { type: String, required: true })
 
@@ -14,7 +17,8 @@ const filters = [
 
 <template>
   <footer class="todo-footer">
-    <span class="count">{{ remaining }} {{ remaining === 1 ? 'item' : 'items' }} left</span>
+    <span v-if="remaining === 0" class="count">All done</span>
+    <span v-else class="count">{{ remaining }} {{ remaining === 1 ? 'item' : 'items' }} left</span>
     <div class="filters">
       <button
         v-for="option in filters"
@@ -25,6 +29,9 @@ const filters = [
         @click="filter = option.value"
       >
         {{ option.label }}
+      </button>
+      <button v-if="completed > 0" type="button" class="clear-completed" @click="emit('clear-completed')">
+        Clear completed
       </button>
     </div>
   </footer>

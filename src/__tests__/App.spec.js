@@ -35,7 +35,7 @@ describe('App', () => {
 
     await checkbox.setValue(true)
     expect(wrapper.find('.todo-item').classes()).toContain('done')
-    expect(wrapper.find('.count').text()).toBe('0 items left')
+    expect(wrapper.find('.count').text()).toBe('All done')
 
     await checkbox.setValue(false)
     expect(wrapper.find('.todo-item').classes()).not.toContain('done')
@@ -68,5 +68,19 @@ describe('App', () => {
 
     await filterButton('All').trigger('click')
     expect(titles(wrapper)).toEqual(['Buy milk', 'Walk dog'])
+  })
+
+  it('clears completed todos', async () => {
+    const wrapper = mount(App)
+    await addTodo(wrapper, 'Buy milk')
+    await addTodo(wrapper, 'Walk dog')
+    await addTodo(wrapper, 'Read book')
+    const checkboxes = wrapper.findAll('.todo-item input[type="checkbox"]')
+    await checkboxes[0].setValue(true)
+    await checkboxes[2].setValue(true)
+
+    await wrapper.find('.clear-completed').trigger('click')
+    expect(titles(wrapper)).toEqual(['Walk dog'])
+    expect(wrapper.find('.clear-completed').exists()).toBe(false)
   })
 })

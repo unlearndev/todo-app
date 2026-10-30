@@ -15,6 +15,7 @@ const filteredTodos = computed(() => {
 })
 
 const remaining = computed(() => todos.value.filter((todo) => !todo.done).length)
+const completed = computed(() => todos.value.length - remaining.value)
 
 function addTodo(title) {
   todos.value.push({ id: nextId++, title, done: false })
@@ -28,6 +29,10 @@ function toggleTodo(id) {
 function deleteTodo(id) {
   todos.value = todos.value.filter((todo) => todo.id !== id)
 }
+
+function clearCompleted() {
+  todos.value = todos.value.filter((todo) => !todo.done)
+}
 </script>
 
 <template>
@@ -35,7 +40,13 @@ function deleteTodo(id) {
     <h1>Todos</h1>
     <TodoInput @add="addTodo" />
     <TodoList :todos="filteredTodos" @toggle="toggleTodo" @delete="deleteTodo" />
-    <TodoFooter v-if="todos.length" v-model:filter="filter" :remaining="remaining" />
+    <TodoFooter
+      v-if="todos.length"
+      v-model:filter="filter"
+      :remaining="remaining"
+      :completed="completed"
+      @clear-completed="clearCompleted"
+    />
   </main>
 </template>
 
