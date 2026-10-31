@@ -40,26 +40,72 @@ const filters = [
 <style scoped>
 .todo-footer {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  margin-top: 16px;
   font-size: 14px;
+}
+
+.count {
+  padding: 0 4px;
+  color: var(--text-muted);
 }
 
 .filters {
   display: flex;
-  gap: 4px;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 button {
-  padding: 4px 8px;
-  border: 1px solid transparent;
-  background: none;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 14px;
   cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 button.selected {
-  border-color: #999;
-  border-radius: 4px;
+  color: #0d0f14;
+  background: var(--accent);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+.clear-completed {
+  margin-left: auto;
+  border-color: transparent;
+  background: transparent;
+}
+
+@media (hover: hover) {
+  button:not(.selected):hover {
+    color: var(--text);
+    border-color: var(--text-faint);
+  }
+
+  .clear-completed:hover {
+    color: var(--danger);
+  }
+}
+
+@media (min-width: 480px) {
+  .todo-footer {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .clear-completed {
+    margin-left: 0;
+  }
 }
 </style>
