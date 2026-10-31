@@ -37,3 +37,9 @@ __screenshots__/
 
 # Vite
 *.timestamp-*-*.mjs
+
+# SQLite database (created by the todo API)
+/data/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal

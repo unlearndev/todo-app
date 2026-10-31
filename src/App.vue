@@ -1,12 +1,13 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import TodoInput from './components/TodoInput.vue'
 import TodoList from './components/TodoList.vue'
 import TodoFooter from './components/TodoFooter.vue'
+import * as api from './api.js'
 
 const todos = ref([])
 const filter = ref('all')
-let nextId = 1
+const error = ref('')
 
 const filteredTodos = computed(() => {
   if (filter.value === 'active') return todos.value.filter((todo) => !todo.done)
@@ -21,32 +22,65 @@ const sortedTodos = computed(() =>
 const remaining = computed(() => todos.value.filter((todo) => !todo.done).length)
 const completed = computed(() => todos.value.length - remaining.value)
 
+// Runs an API call and shows a message if it fails, leaving the list as it was.
+async function save(action) {
+  try {
+    await action()
+    error.value = ''
+  } catch {
+    error.value = "Couldn't reach the server. Your last change wasn't saved."
+  }
+}
+
+function replaceTodo(updated) {
+  todos.value = todos.value.map((todo) => (todo.id === updated.id ? updated : todo))
+}
+
+onMounted(async () => {
+  try {
+    todos.value = await api.fetchTodos()
+  } catch {
+    error.value = "Couldn't load your todos. Is the API running?"
+  }
+})
+
 function addTodo(title, priority = false) {
-  todos.value.push({ id: nextId++, title, done: false, priority })
+  return save(async () => {
+    todos.value = [...todos.value, await api.createTodo(title, priority)]
+  })
 }
 
 function toggleTodo(id) {
   const todo = todos.value.find((todo) => todo.id === id)
-  if (todo) todo.done = !todo.done
+  if (!todo) return
+  return save(async () => replaceTodo(await api.updateTodo(id, { done: !todo.done })))
 }
 
 function togglePriority(id) {
   const todo = todos.value.find((todo) => todo.id === id)
-  if (todo) todo.priority = !todo.priority
+  if (!todo) return
+  return save(async () => replaceTodo(await api.updateTodo(id, { priority: !todo.priority })))
 }
 
 function deleteTodo(id) {
-  todos.value = todos.value.filter((todo) => todo.id !== id)
+  return save(async () => {
+    await api.deleteTodo(id)
+    todos.value = todos.value.filter((todo) => todo.id !== id)
+  })
 }
 
 function clearCompleted() {
-  todos.value = todos.value.filter((todo) => !todo.done)
+  return save(async () => {
+    await api.clearCompletedTodos()
+    todos.value = todos.value.filter((todo) => !todo.done)
+  })
 }
 </script>
 
 <template>
   <main class="todo-app">
     <h1>Todos</h1>
+    <p v-if="error" class="error" role="alert">{{ error }}</p>
     <TodoInput @add="addTodo" />
     <TodoList
       :todos="sortedTodos"
@@ -146,5 +180,14 @@ input {
   .todo-app h1 {
     font-size: 40px;
   }
+}
+
+.todo-app .error {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.35);
+  border-radius: var(--radius);
+  color: var(--danger);
 }
 </style>
