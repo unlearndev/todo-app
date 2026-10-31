@@ -5,7 +5,7 @@ defineProps({
   todos: { type: Array, required: true },
 })
 
-const emit = defineEmits(['toggle', 'delete'])
+const emit = defineEmits(['toggle', 'toggle-priority', 'delete'])
 </script>
 
 <template>
@@ -15,6 +15,7 @@ const emit = defineEmits(['toggle', 'delete'])
       :key="todo.id"
       :todo="todo"
       @toggle="emit('toggle', todo.id)"
+      @toggle-priority="emit('toggle-priority', todo.id)"
       @delete="emit('delete', todo.id)"
     />
   </ul>
