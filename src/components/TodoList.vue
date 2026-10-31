@@ -23,6 +23,9 @@ const emit = defineEmits(['toggle', 'toggle-priority', 'delete'])
 
 <style scoped>
 .todo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   list-style: none;
   margin: 0;
   padding: 0;

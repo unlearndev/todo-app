@@ -28,47 +28,132 @@ const emit = defineEmits(['toggle', 'toggle-priority', 'delete'])
 
 <style scoped>
 .todo-item {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  background: #fff;
-  border-bottom: 1px solid #e5e5e5;
+  gap: 2px;
+  min-height: 56px;
+  padding: 4px 4px 4px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .high-priority {
-  border-left: 4px solid #e08a00;
+  background: linear-gradient(90deg, var(--priority-soft), transparent 70%), var(--surface);
+  border-color: rgba(255, 176, 32, 0.35);
+}
+
+.high-priority::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--priority);
+}
+
+.high-priority .title {
+  font-weight: 600;
 }
 
 label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   flex: 1;
+  min-width: 0;
+  min-height: var(--tap);
+  cursor: pointer;
+}
+
+input[type='checkbox'] {
+  appearance: none;
+  flex-shrink: 0;
+  display: grid;
+  place-content: center;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  border: 2px solid var(--text-faint);
+  border-radius: 50%;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+input[type='checkbox']::after {
+  content: '';
+  width: 6px;
+  height: 11px;
+  margin-top: -2px;
+  border: solid #0d0f14;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg) scale(0);
+  transition: transform 0.15s ease;
+}
+
+input[type='checkbox']:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+input[type='checkbox']:checked::after {
+  transform: rotate(45deg) scale(1);
+}
+
+.title {
+  font-size: 16px;
+  overflow-wrap: anywhere;
+  transition: color 0.15s ease;
 }
 
 .done .title {
   text-decoration: line-through;
-  color: #999;
+  color: var(--text-faint);
 }
 
 button {
+  flex-shrink: 0;
+  width: var(--tap);
+  height: var(--tap);
   border: none;
+  border-radius: 10px;
   background: none;
-  font-size: 20px;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--text-faint);
   cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+button:active {
+  background: var(--surface-raised);
 }
 
 .priority {
-  font-size: 16px;
-  color: #bbb;
+  font-size: 17px;
 }
 
 .priority[aria-pressed='true'] {
-  color: #e08a00;
+  color: var(--priority);
 }
 
-.delete {
-  color: #c33;
+@media (hover: hover) {
+  .priority:hover {
+    color: var(--priority);
+    background: var(--priority-soft);
+  }
+
+  .delete:hover {
+    color: var(--danger);
+    background: rgba(255, 107, 107, 0.1);
+  }
 }
 </style>

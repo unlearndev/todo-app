@@ -99,17 +99,87 @@ function clearCompleted() {
 </template>
 
 <style>
+:root {
+  color-scheme: dark;
+  --bg: #0d0f14;
+  --surface: #171a21;
+  --surface-raised: #1f232c;
+  --border: #2a2f3a;
+  --text: #e8eaf0;
+  --text-muted: #8b91a1;
+  --text-faint: #5c6273;
+  --accent: #7c8cff;
+  --accent-strong: #98a4ff;
+  --priority: #ffb020;
+  --priority-soft: rgba(255, 176, 32, 0.1);
+  --danger: #ff6b6b;
+  --radius: 14px;
+  --tap: 44px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
-  background: #f5f5f5;
-  color: #222;
+  min-height: 100vh;
+  min-height: 100dvh;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  background:
+    radial-gradient(120% 60% at 50% 0%, #1a1e2b 0%, var(--bg) 60%) fixed,
+    var(--bg);
+  color: var(--text);
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .todo-app {
-  max-width: 480px;
-  margin: 48px auto;
-  padding: 0 16px;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: max(24px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(32px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+
+.todo-app h1 {
+  margin: 8px 4px 20px;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 640px) {
+  .todo-app {
+    padding-top: 64px;
+  }
+
+  .todo-app h1 {
+    font-size: 40px;
+  }
 }
 
 .todo-app .error {
