@@ -15,4 +15,10 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  server: {
+    proxy: {
+      // The todo API in server/ (started alongside Vite by `npm run dev`).
+      '/api': `http://localhost:${process.env.PORT ?? 3001}`,
+    },
+  },
 })

@@ -31,6 +31,26 @@ npm install
 npm run dev
 ```
 
+This starts two things side by side:
+
+- the todo API (`server/`) on port 3001, which reloads when files in `server/` change
+- the Vite dev server, which forwards `/api` requests to the API
+
+Todos are stored in SQLite at `data/todos.sqlite` (ignored by git), so they survive a page refresh
+and a restart. Set `TODO_DB` to use a different file, or `PORT` to move the API to another port.
+
+To run only the API, use `npm run start:api`.
+
+#### API
+
+| Method | Path                   | Body                                        |
+| ------ | ---------------------- | ------------------------------------------- |
+| GET    | `/api/todos`           |                                             |
+| POST   | `/api/todos`           | `{ "title": "Buy milk", "priority": true }` |
+| PATCH  | `/api/todos/:id`       | any of `title`, `done`, `priority`          |
+| DELETE | `/api/todos/:id`       |                                             |
+| DELETE | `/api/todos/completed` | clears every done todo                      |
+
 ### Compile and Minify for Production
 
 ```sh
