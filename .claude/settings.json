@@ -1,5 +1,17 @@
 {
   "permissions": {
     "deny": ["Read(**/.env)", "Read(**/.env.*)"]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -e .stop_hook_active > /dev/null && exit 0; npm run test:unit -- --run >&2 || { echo 'The tests are failing. Tell me which test and why, and ask before you change anything.' >&2; exit 2; }"
+          }
+        ]
+      }
+    ]
   }
 }
