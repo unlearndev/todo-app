@@ -183,9 +183,11 @@ input {
 }
 
 .todo-app .error {
-  padding: 8px 12px;
-  background: #fdecea;
-  color: #a61b1b;
-  border-radius: 4px;
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.35);
+  border-radius: var(--radius);
+  color: var(--danger);
 }
 </style>

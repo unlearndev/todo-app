@@ -1,11 +1,12 @@
 // @vitest-environment node
 import { mkdtempSync, rmSync } from 'node:fs'
-import { tmpdir } from 'node:os'
+import { networkInterfaces, tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { createApp } from '../../server/app.js'
 import { openTodoDb } from '../../server/db.js'
+import { startServer as startApiServer } from '../../server/start.js'
 
 function startServer(db) {
   return new Promise((resolve) => {
@@ -175,5 +176,36 @@ describe('todo database', () => {
       { id: 2, title: 'Pay rent', done: true, priority: true },
     ])
     second.close()
+  })
+})
+
+describe('starting the API', () => {
+  // This machine's address on the network, if it has one.
+  const lanAddress = Object.values(networkInterfaces())
+    .flat()
+    .find((iface) => iface.family === 'IPv4' && !iface.internal)?.address
+
+  let started
+
+  beforeEach(async () => {
+    started = await startApiServer({ port: 0, dbFile: ':memory:' })
+  })
+
+  afterEach(async () => {
+    await new Promise((resolve) => started.server.close(resolve))
+    started.todos.close()
+  })
+
+  it('listens on 127.0.0.1', async () => {
+    const { address, port } = started.server.address()
+
+    expect(address).toBe('127.0.0.1')
+    expect((await fetch(`http://127.0.0.1:${port}/api/todos`)).status).toBe(200)
+  })
+
+  it.skipIf(!lanAddress)('does not answer on the network address', async () => {
+    const { port } = started.server.address()
+
+    await expect(fetch(`http://${lanAddress}:${port}/api/todos`)).rejects.toThrow('fetch failed')
   })
 })

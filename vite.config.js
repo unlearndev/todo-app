@@ -17,8 +17,10 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      // The todo API in server/ (started alongside Vite by `npm run dev`).
-      '/api': `http://localhost:${process.env.PORT ?? 3001}`,
+      // The todo API in server/ (started alongside Vite by `npm run dev`). Use
+      // 127.0.0.1 rather than localhost: the API only listens on IPv4 loopback,
+      // and localhost can resolve to ::1.
+      '/api': `http://127.0.0.1:${process.env.PORT ?? 3001}`,
     },
   },
 })
